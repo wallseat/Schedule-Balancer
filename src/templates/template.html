@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+
+            font-size: 16px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+        }
+
+        .container {
+            margin: 1em auto;
+            width: 90%;
+            height: 100vh;
+
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        td {
+            text-align: left;
+            padding: 12px;
+            border: 2px solid #bbb;
+
+            text-align: center;
+        }
+
+        td.course {
+            padding: 5px;
+            font-size: 14;
+            width: 20rem;
+
+        }
+
+        td.course.lecture {
+            background-color: #ddeedb;
+        }
+
+        td.course.practice {
+            background-color: #fef0c7;
+        }
+
+        td.slot {
+            font-weight: 600;
+            width: 12rem;
+        }
+
+        td.empty {
+            background-color: #eeeeee;
+            width: 12rem;
+        }
+
+        span.bold {
+            font-weight: 600;
+        }
+
+        tr#days_header td {
+            font-weight: 600 !important;
+        }
+
+        td.student_name {
+            font-weight: 600;
+            font-size: 32px;
+
+        }
+
+        .pager {
+            width: 90%;
+            margin: 1em auto;
+
+            text-align: center;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <table>
+            <tr>
+                <td class="student_name" colspan="8">{{ student_name }}</td>
+            </tr>
+            <tr id="days_header">
+                <td rowspan=2 colspan=2>Неделя {{ week_no }}</td>
+                <td>Пн</td>
+                <td>ВТ</td>
+                <td>Ср</td>
+                <td>Чт</td>
+                <td>Пт</td>
+                <td>Сб</td>
+
+            </tr>
+            <tr id="location_header">
+                {% for day, location in locations[week_type].items() %}
+                <td>
+                    {% if days[day] %}
+                    {{ location }}
+                    {% else %}
+                    &nbsp;
+                    {% endif %}                
+                </td>
+                {% endfor %}
+            </tr>
+            {% for slot_id, slot in slots.items() %}
+            <tr>
+                <td>{{ slot_id }}</td>
+                <td class="slot">{{ slot['start_time'] }} - {{ slot['end_time'] }}</td>
+                {% for day_name, day_schedule in days.items() %}
+                {% if day_schedule[slot_id] %}
+                <td class="course {{ day_schedule[slot_id].type_.value }}">
+                    <span class="bold">{{ courses[day_schedule[slot_id]['course_id']]["name"] }}</span>
+                    <br>
+                    ауд. {{ day_schedule[slot_id]['room'] }} &nbsp; {{ day_schedule[slot_id]['tutor'] }}
+                </td>
+                {% else %}
+                <td class="empty">
+
+                </td>
+                {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+
+        </table>
+
+        <div class="pager">
+            {% if week_no != start_week %}
+            <a href="./week_{{ week_no - 1 }}.html"> <- </a>
+            {% endif %}
+            &nbsp;
+            {% if week_no != end_week %}
+            <a href="./week_{{ week_no + 1 }}.html"> -> </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        {% if week_no != start_week %}
+        document.body.addEventListener("keydown", function (event) {
+            if (event.key === "ArrowLeft") {
+                window.location.replace("./week_{{ week_no - 1 }}.html");
+            }
+        });
+        {% endif %}
+
+        {% if week_no != end_week %}
+        document.body.addEventListener("keydown", function (event) {
+            if (event.key === "ArrowRight") {
+                window.location.replace("./week_{{ week_no + 1 }}.html");
+            }
+        });
+        {% endif %}
+    </script>
+
+</body>
+
+</html>
